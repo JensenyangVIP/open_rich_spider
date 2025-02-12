@@ -1,7 +1,7 @@
 #
 ouput_new_topics.csv
 output_origin_hot_titles.csv
-
+xiaohongshu_auth.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
