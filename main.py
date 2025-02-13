@@ -17,15 +17,19 @@ import schedule
 
 # ========== 核心配置区 ==========
 CONFIG = {
-    "platforms": ["xiaohongshu", "zhihu"],
-    # "platforms": ["zhihu"],
-    "keywords": ["副业", "裁员", "轻创业"],
-    "max_pages": 1,  # 每个平台爬取页数
-    "output_file": "ouput_new_topics.csv",
-    "output_origin_hot_titles": "output_origin_hot_titles.csv",
-    "proxy_server": None,  # 如需代理可填写例如 'http://127.0.0.1:1080'
-    "headless": False  # 是否显示浏览器界面 True | False
+    # "platforms": ["xiaohongshu", "zhihu"],
+    # # "platforms": ["zhihu"],
+    # "keywords": ["副业", "裁员", "轻创业"],
+    # "max_pages": 1,  # 每个平台爬取页数
+    # "output_file": "ouput_new_topics.csv",
+    # "output_origin_hot_titles": "output_origin_hot_titles.csv",
+    # "proxy_server": None,  # 如需代理可填写例如 'http://127.0.0.1:1080'
+    # "headless": False  # 是否显示浏览器界面 True | False
 }
+
+# 加载 JSON 配置文件
+with open('config.json', 'r', encoding='utf-8') as f:
+    CONFIG = json.load(f)
 
 # ========== 反爬伪装配置 ==========
 HEADERS = {
@@ -39,11 +43,53 @@ jieba.load_userdict("user_dict.txt")
 
 # ========== 爆款模板库 ==========
 TOPIC_TEMPLATES = [
-    "大厂程序员用数据破解{keyword}的{num}个真相",
-    "大厂绝不会告诉你的{keyword}秘诀",
-    "用Python分析{num}案例后，{keyword}的关键竟是...",
-    "{age}岁被裁程序员：{keyword}如何月入{income}+"
+    "被裁第3天，我靠{keyword}赚到{income}（前大厂程序员自述）", # 身份代入+悬念钩子
+    "35岁失业后才发现：{keyword}才是打工人的救生圈", # 痛点共鸣+价值锚点
+    "偷偷做{keyword}副业，工资外多赚{income}的野路子", # 人性弱点+利益刺激
+    "为什么没人告诉我{keyword}能月入5W？35岁老码农转型实录", # 颠覆认知+年龄标签
+    "{keyword}搞钱实操：3个步骤让我摆脱职场危机（含工具包）", # 具体方法+资源诱惑
+    "程序员转行做{keyword}：从时薪50到日入8000的黑暗进化", # 反差对比+暗黑叙事
+    "被HR约谈后，我在茶水间偷偷注册了{keyword}账号", # 场景细节+行动号召
+    "35岁程序员血泪警告：这{num}种{keyword}副业千万别碰！", # 风险警示+权威人设
+    "前大厂码农：用这{num}个公式，我把{keyword}做成自动提款机", # 技术降维+结果承诺
+    "中年失业不可怕，可怕的是不知道{keyword}这么能搞钱" # 情绪共振+价值反转
 ]
+
+# # 思维破局层（认知冲突）
+# "思维觉醒": [
+#     "认知杀猪盘",
+#     "信息茧房破壁", 
+#     "穷人思维癌症",
+#     "学生思维死刑",
+#     "打工者思维绝症"
+# ],
+
+# # 认知变现层（功利吸引）
+# "降维打击": [
+#     "认知套利",
+#     "思维模型盗取", 
+#     "元认知作弊器",
+#     "反人性操作",
+#     "暗黑进化论"
+# ],
+
+# # 情绪钩子层（传播裂变）
+# "冲突制造": [
+#     "毁三观思维",
+#     "反常识认知", 
+#     "被禁人性课",
+#     "精英灭智阴谋",
+#     "认知税收割"
+# ],
+
+# # 场景化长尾词（精准打击）
+# "生存焦虑": [
+#     "为什么越努力越贫穷",
+#     "底层思维正在毁掉你",
+#     "认知差距十倍收入差", 
+#     "人性弱点负债陷阱",
+#     "思维固化中年危机"
+# ]
 
 # ========== 核心爬虫类 ==========
 class TopicSpider:
@@ -132,7 +178,7 @@ class TopicSpider:
         # if "xiaohongshu" in CONFIG["platforms"]:
         self.context = await self.browser.new_context(
             user_agent=HEADERS["User-Agent"],
-            viewport={"width": 1920, "height": 1080},
+            viewport={"width": 1024, "height": 768},
             storage_state="xiaohongshu_auth.json"
         )
 

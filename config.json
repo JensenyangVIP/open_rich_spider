@@ -1,0 +1,9 @@
+{
+    "platforms": ["xiaohongshu", "zhihu"],
+    "keywords": ["副业", "裁员", "轻创业"],
+    "max_pages": 1,
+    "output_file": "output_new_topics.csv",
+    "output_origin_hot_titles": "output_origin_hot_titles.csv",
+    "proxy_server": null,
+    "headless": false
+}
