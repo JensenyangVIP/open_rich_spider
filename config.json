@@ -1,6 +1,6 @@
 {
     "platforms": ["xiaohongshu", "zhihu"],
-    "keywords": ["副业 宝妈 零基础", "裁员自救", "轻创业", "工资外收入", "职业自由", "职场突围"],
+    "keywords": ["副业", "宝妈", "零基础", "轻创业", "工资外收入", "职业自由", "职场", "AI"],
     "max_pages": 1,
     "output_file": "output_new_topics.csv",
     "output_origin_hot_titles": "output_origin_hot_titles.csv",
