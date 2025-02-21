@@ -5,6 +5,7 @@
 
 """
 import asyncio
+from datetime import datetime
 import json
 import re
 import time
@@ -27,6 +28,8 @@ CONFIG = {
     # "headless": False  # 是否显示浏览器界面 True | False
 }
 
+GLOBAL_CACHE = {}
+
 # 加载 JSON 配置文件
 with open('config.json', 'r', encoding='utf-8') as f:
     CONFIG = json.load(f)
@@ -42,21 +45,10 @@ jieba.analyse.set_stop_words("stopwords.txt")
 jieba.load_userdict("user_dict.txt")
 
 # ========== 爆款模板库 ==========
-TOPIC_TEMPLATES = [
-    "500元启动的生意，我靠{keyword}赚到{income}（前大厂程序员自述）", # 身份代入+悬念钩子
-    "35岁失业后才发现：{keyword}才是打工人的救生圈", # 痛点共鸣+价值锚点
-    "偷偷做{keyword}副业，工资外多赚{income}的野路子", # 人性弱点+利益刺激
-    "为什么没人告诉我{keyword}能月入5W？35岁老码农转型实录", # 颠覆认知+年龄标签
-    "{keyword}搞钱实操：3个步骤让我摆脱职场危机（含工具包）", # 具体方法+资源诱惑
-    "程序员转行做{keyword}：从时薪50到日入8000的黑暗进化", # 反差对比+暗黑叙事
-    "程序员转行做{keyword}的踩坑指南", 
-    "一个人在家就能做的{keyword}生意", 
-    "普通二本逆袭{keyword}的生意", 
-    "被HR约谈后，我在茶水间偷偷注册了{keyword}账号", # 场景细节+行动号召
-    "35岁程序员血泪警告：这{num}种{keyword}副业千万别碰！", # 风险警示+权威人设
-    "前大厂码农：用这{num}个公式，我把{keyword}做成自动提款机", # 技术降维+结果承诺
-    "中年失业不可怕，可怕的是不知道{keyword}这么能搞钱" # 情绪共振+价值反转
-]
+# 读取 JSON 文件
+TOPIC_TEMPLATES = []
+with open('templates.json', 'r', encoding='utf-8') as file:
+    TOPIC_TEMPLATES = json.load(file)
 
 # # 思维破局层（认知冲突）
 # "思维觉醒": [
@@ -286,13 +278,18 @@ class TopicSpider:
                 combined[word] += weight * 0.4
             else:
                 combined[word] = weight * 0.4
-                
-        return sorted(combined.items(), key=lambda x: x[1], reverse=True)[:20]
+
+        analyzed_keywords = sorted(combined.items(), key=lambda x: x[1], reverse=True)[:20]  
+        df = pd.DataFrame(analyzed_keywords)   
+        analyzed_keywords_csv_file_name = datetime.now().strftime('B-%Y-%m-%d-') + CONFIG["output_analyzed_keywords"]
+        df.to_csv(analyzed_keywords_csv_file_name, index=False, encoding='utf-8-sig')
+        print(f"热词导出！保存至 {analyzed_keywords_csv_file_name}")  
+        return analyzed_keywords
 
     def generate_topics(self, keywords):
         """选题生成器"""
         topics = []
-        for word, _ in keywords[:10]:
+        for word, _ in keywords[:20]:
             for template in TOPIC_TEMPLATES:
                 topic = template.format(
                     keyword=word,
@@ -309,11 +306,14 @@ class TopicSpider:
     @staticmethod
     def predict_hot_score(topic):
         """爆款预测模型"""
-        hot_signals = {
-            "情绪词": ["惊爆", "揭秘", "血泪", "救命", "逆袭"],
-            "结构词": ["X步", "X天", "X个", "模型", "公式"],
-            "人群词": ["打工人", "宝妈", "00后", "程序员", "体制内"]
-        }
+        # 读取 JSON 文件
+        if not GLOBAL_CACHE.get("hot_signals"):
+            with open('hot_signals.json', 'r', encoding='utf-8') as file:
+                hot_signals = json.load(file)
+                GLOBAL_CACHE["hot_signals"] = hot_signals
+        else:
+            hot_signals = GLOBAL_CACHE["hot_signals"]
+
         score = 0
         for word in jieba.lcut(topic):
             for _, words in hot_signals.items():
@@ -338,15 +338,18 @@ class TopicSpider:
         # 保存原始的热门标题
         ##
         df = pd.DataFrame(self.results)
-        df.to_csv(CONFIG["output_origin_hot_titles"], index=False, encoding='utf-8-sig')
+        original_csv_file_name = datetime.now().strftime('A-%Y-%m-%d-') + CONFIG["output_origin_hot_titles"]
+        df.to_csv(original_csv_file_name, index=False, encoding='utf-8-sig')
+        print(f"原始选题导出！保存至 {original_csv_file_name}")
 
         # 数据分析与保存
         keywords = self.analyze_keywords()
         topics = self.generate_topics(keywords)
         
         df = pd.DataFrame(topics)
-        df.to_csv(CONFIG["output_file"], index=False)
-        print(f"生成选题成功！保存至 {CONFIG['output_file']}")
+        csv_file_name = datetime.now().strftime('C-%Y-%m-%d-') + CONFIG["output_file"]
+        df.to_csv(csv_file_name, index=False)
+        print(f"生成选题成功！保存至 {csv_file_name}")
 
 # ========== 定时任务模块 ==========
 def job():

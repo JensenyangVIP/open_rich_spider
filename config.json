@@ -1,9 +1,10 @@
 {
     "platforms": ["xiaohongshu", "zhihu"],
-    "keywords": ["副业", "宝妈", "零基础", "轻创业", "工资外收入", "职业自由", "职场", "AI"],
-    "max_pages": 1,
-    "output_file": "output_new_topics.csv",
+    "keywords": ["副业", "宝妈", "零基础", "轻创业", "成长", "自由职业", "职场", "AI"],
+    "max_pages": 2,
     "output_origin_hot_titles": "output_origin_hot_titles.csv",
+    "output_analyzed_keywords": "output_analyzed_keywords.csv",
+    "output_file": "output_new_topics.csv",
     "proxy_server": null,
     "headless": false
 }
