@@ -7,6 +7,7 @@
 import asyncio
 from datetime import datetime
 import json
+import os
 import re
 import time
 from urllib.parse import quote
@@ -94,6 +95,17 @@ class TopicSpider:
         self.context = None
 
     async def login_context(self):
+        # 文件路径
+        file_path = 'xiaohongshu_auth.json'
+
+        # 判断文件是否存在
+        if not os.path.exists(file_path):
+            # 文件不存在，创建文件并写入空字典 {}
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump({}, f, ensure_ascii=False, indent=4)
+            print(f"文件 {file_path} 已创建，并写入了空字典。")
+        else:
+            print(f"文件 {file_path} 已存在。")
         # 首次运行需手动登录
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=False)
