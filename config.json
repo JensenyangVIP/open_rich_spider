@@ -1,6 +1,6 @@
 {
     "platforms": ["xiaohongshu", "zhihu"],
-    "keywords": ["副业", "宝妈", "零基础", "轻创业", "成长", "自由职业", "职场", "AI"],
+    "keywords": ["副业", "宝妈", "成长", "情感", "职场", "AI"],
     "max_pages": 2,
     "output_origin_hot_titles": "output_origin_hot_titles.csv",
     "output_analyzed_keywords": "output_analyzed_keywords.csv",
